@@ -1,0 +1,793 @@
+/* ============================================================
+   GORIKI GAME — Global Styles
+   ============================================================ */
+
+/* --- Variables & Reset --- */
+:root {
+  --bg: #0f0f0f;
+  --bg-card: #1a1a1a;
+  --bg-card-hover: #222222;
+  --border: #2e2e2e;
+  --border-accent: #3e3e3e;
+
+  --text-primary: #f0f0f0;
+  --text-secondary: #a0a0a0;
+  --text-muted: #555;
+
+  --accent: #e63946;
+  --accent-hover: #ff4d5a;
+  --success: #2a9d5c;
+  --success-light: #1a3d2b;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+
+  --font: "Inter", "Segoe UI", system-ui, sans-serif;
+  --font-ja: "Noto Sans JP", sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { font-size: 16px; scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text-primary);
+  font-family: var(--font);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  cursor: pointer;
+  font-family: inherit;
+  border: none;
+  background: none;
+}
+
+img { display: block; max-width: 100%; }
+
+/* ============================================================
+   LOADING SCREEN
+   ============================================================ */
+.loading-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  gap: 16px;
+  padding: 24px;
+}
+
+.loading-screen .logo {
+  width: 120px;
+  margin-bottom: 8px;
+}
+
+.loading-label {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
+.progress-track {
+  width: 280px;
+  height: 6px;
+  background: var(--border);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 99px;
+  transition: width 0.3s ease;
+}
+
+.loading-percent {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.error-label {
+  color: var(--accent);
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.error-sub {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+/* ============================================================
+   CHIPS (filtres, tri)
+   ============================================================ */
+.chip {
+  padding: 6px 14px;
+  border-radius: 99px;
+  border: 1px solid var(--border-accent);
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  font-weight: 500;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.chip:hover {
+  border-color: var(--accent);
+  color: var(--text-primary);
+}
+
+.chip.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+/* Chips types — couleur de fond subtile selon le type */
+.chip-fire     { border-color: #F08030; }
+.chip-water    { border-color: #6890F0; }
+.chip-grass    { border-color: #78C850; }
+.chip-electric { border-color: #F8D030; }
+.chip-ice      { border-color: #98D8D8; }
+.chip-fighting { border-color: #C03028; }
+.chip-poison   { border-color: #A040A0; }
+.chip-ground   { border-color: #E0C068; }
+.chip-flying   { border-color: #A890F0; }
+.chip-psychic  { border-color: #F85888; }
+.chip-bug      { border-color: #A8B820; }
+.chip-rock     { border-color: #B8A038; }
+.chip-ghost    { border-color: #705898; }
+.chip-dragon   { border-color: #7038F8; }
+.chip-dark     { border-color: #705848; }
+.chip-steel    { border-color: #B8B8D0; }
+.chip-fairy    { border-color: #EE99AC; }
+.chip-normal   { border-color: #A8A878; }
+
+/* ============================================================
+   HOME SCREEN
+   ============================================================ */
+.home-screen {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 40px 24px 100px;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.home-header {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.home-title {
+  font-size: 2.8rem;
+  font-weight: 800;
+  letter-spacing: -1px;
+  background: linear-gradient(135deg, #fff 40%, var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.home-subtitle {
+  color: var(--text-secondary);
+  font-size: 1rem;
+}
+
+/* Sélecteur de langue */
+.lang-selector {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.lang-btn {
+  padding: 5px 14px;
+  border-radius: 99px;
+  border: 1px solid var(--border-accent);
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  transition: all 0.15s;
+}
+
+.lang-btn:hover { color: var(--text-primary); border-color: #666; }
+.lang-btn.active {
+  border-color: var(--text-primary);
+  color: var(--text-primary);
+  background: #2a2a2a;
+}
+
+.home-main {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.home-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(15, 15, 15, 0.92);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid var(--border);
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  z-index: 100;
+}
+
+.pokemon-count {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+/* ============================================================
+   FILTER PANEL
+   ============================================================ */
+.filter-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.filter-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.filter-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.filter-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.filter-reset {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--text-muted);
+  line-height: 1.2;
+  transition: color 0.15s;
+}
+
+.filter-reset:hover:not(:disabled) { color: var(--text-secondary); }
+.filter-reset:disabled { opacity: 0.4; cursor: default; }
+
+.filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* ============================================================
+   TIMER SETUP
+   ============================================================ */
+.timer-setup {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.infinite-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  user-select: none;
+}
+
+.infinite-toggle input[type="checkbox"] {
+  accent-color: var(--accent);
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+}
+
+.timer-slider-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 4px;
+}
+
+.timer-slider {
+  flex: 1;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.timer-value {
+  font-size: 1rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-primary);
+  min-width: 56px;
+  text-align: right;
+}
+
+/* ============================================================
+   START BUTTON
+   ============================================================ */
+.start-btn {
+  padding: 12px 36px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 700;
+  border-radius: var(--radius-md);
+  transition: background 0.15s, transform 0.1s;
+  letter-spacing: 0.02em;
+}
+
+.start-btn:hover:not(:disabled) {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+}
+
+.start-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ============================================================
+   GAME SCREEN
+   ============================================================ */
+.game-screen {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 24px 60px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.game-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(15, 15, 15, 0.95);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.game-title {
+  font-size: 1.2rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+.game-timer {
+  font-size: 1.4rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-primary);
+  transition: color 0.3s;
+}
+
+.game-timer.urgent {
+  color: var(--accent);
+  animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+.give-up-btn {
+  padding: 7px 16px;
+  border: 1px solid var(--border-accent);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  transition: all 0.15s;
+}
+
+.give-up-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.game-input-wrapper {
+  padding-top: 8px;
+}
+
+/* ============================================================
+   INPUT GUESS
+   ============================================================ */
+.input-guess-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-guess {
+  width: 100%;
+  padding: 14px 20px;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-accent);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-size: 1.05rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.input-guess:focus {
+  border-color: var(--accent);
+}
+
+.input-guess-wrapper.success .input-guess {
+  border-color: var(--success);
+}
+
+.input-badge {
+  position: absolute;
+  right: 16px;
+  font-size: 1rem;
+  font-weight: 700;
+  animation: fadeIn 0.2s ease;
+}
+
+.input-badge.success { color: var(--success); }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.7); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* ============================================================
+   PROGRESS BAR
+   ============================================================ */
+.progress-bar-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.progress-bar-track {
+  height: 8px;
+  background: var(--border);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 99px;
+  transition: width 0.4s ease;
+}
+
+.progress-label {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.progress-found {
+  font-weight: 700;
+  color: var(--text-primary);
+  font-size: 1rem;
+}
+
+.progress-complete {
+  color: var(--success);
+  font-weight: 600;
+}
+
+/* ============================================================
+   POKEMON GRID
+   ============================================================ */
+.pokemon-grid-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.grid-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.grid-sort-label {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.grid-sort-btns {
+  display: flex;
+  gap: 8px;
+}
+
+.pokemon-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 6px;
+}
+
+/* ============================================================
+   POKEMON CARD
+   ============================================================ */
+.pokemon-card {
+  height: 56px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 6px 10px;
+  gap: 2px;
+  border-top-width: 3px;
+  transition: background 0.15s, transform 0.1s;
+  overflow: hidden;
+}
+
+.pokemon-card.empty {
+  background: #141414;
+  border-color: #1e1e1e;
+  border-top-color: #1e1e1e;
+  cursor: default;
+}
+
+.pokemon-card.guessed {
+  cursor: pointer;
+  background: var(--bg-card);
+}
+
+.pokemon-card.guessed:hover {
+  background: var(--bg-card-hover);
+  transform: translateY(-1px);
+}
+
+.pokemon-card.revealed {
+  cursor: pointer;
+  background: #161616;
+  opacity: 0.6;
+}
+
+.pokemon-card.revealed:hover {
+  opacity: 0.85;
+}
+
+.card-id {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.card-name {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ============================================================
+   POKEMON SHEET (modale)
+   ============================================================ */
+.sheet-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 200;
+  animation: fadeIn 0.15s ease;
+}
+
+.sheet {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 201;
+  background: #1c1c1c;
+  border: 1px solid var(--border-accent);
+  border-radius: var(--radius-lg);
+  padding: 28px 32px;
+  min-width: 260px;
+  max-width: 320px;
+  width: 90%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  animation: slideUp 0.2s ease;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translate(-50%, -46%); }
+  to   { opacity: 1; transform: translate(-50%, -50%); }
+}
+
+.sheet-close {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  color: var(--text-muted);
+  font-size: 1rem;
+  transition: color 0.15s;
+}
+
+.sheet-close:hover { color: var(--text-primary); }
+
+.sheet-sprite-wrapper {
+  width: 96px;
+  height: 96px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sheet-sprite {
+  width: 96px;
+  height: 96px;
+  image-rendering: pixelated;
+}
+
+.sheet-sprite-placeholder {
+  width: 96px;
+  height: 96px;
+  background: var(--border);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  font-size: 2rem;
+}
+
+.sheet-id {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.sheet-names {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+.sheet-name-row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.sheet-lang {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  min-width: 24px;
+}
+
+.sheet-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.sheet-name-ja {
+  font-family: var(--font-ja);
+}
+
+.sheet-types {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.sheet-type-badge {
+  padding: 4px 14px;
+  border-radius: 99px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+}
+
+/* ============================================================
+   RESULT SCREEN
+   ============================================================ */
+.result-screen {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 48px 24px 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.result-header {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.result-title {
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+.result-message {
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+}
+
+.result-hint {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.result-footer {
+  display: flex;
+  justify-content: center;
+  padding-top: 8px;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 600px) {
+  .home-title { font-size: 2rem; }
+  .game-title { font-size: 1rem; }
+  .game-timer { font-size: 1.1rem; }
+
+  .pokemon-grid {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  }
+
+  .sheet {
+    padding: 24px 20px;
+  }
+
+  .home-footer {
+    flex-direction: column;
+    gap: 10px;
+    padding: 14px 16px;
+  }
+
+  .start-btn {
+    width: 100%;
+  }
+}
