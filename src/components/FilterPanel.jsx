@@ -23,12 +23,14 @@ const TYPE_LABELS_EN = {
 };
 
 const CATEGORIES = [
-  { key: "starters",         labelFr: "Starters",           labelEn: "Starters" },
-  { key: "legendaries",      labelFr: "Légendaires",         labelEn: "Legendaries" },
-  { key: "mythicals",        labelFr: "Mythiques",           labelEn: "Mythicals" },
-  { key: "pseudoLegendaries",labelFr: "Pseudo-légendaires",  labelEn: "Pseudo-legendaries" },
-  { key: "babies",           labelFr: "Bébés",               labelEn: "Babies" },
-  { key: "fossils",          labelFr: "Fossiles",            labelEn: "Fossils" },
+  { key: "starters",          labelFr: "Starters",           labelEn: "Starters" },
+  { key: "legendaries",       labelFr: "Légendaires",         labelEn: "Legendaries" },
+  { key: "mythicals",         labelFr: "Fabuleux",            labelEn: "Mythicals" },
+  { key: "pseudoLegendaries", labelFr: "Semi-légendaires",  labelEn: "Pseudo-legendaries" },
+  { key: "babies",            labelFr: "Bébés",               labelEn: "Babies" },
+  { key: "fossils",           labelFr: "Fossiles",            labelEn: "Fossils" },
+  { key: "ultraBeasts",       labelFr: "Ultra-Chimères",      labelEn: "Ultra Beasts" },
+  { key: "paradoxPokemon",    labelFr: "Paradoxes",   labelEn: "Paradoxes" },
 ];
 
 function toggle(arr, value) {
