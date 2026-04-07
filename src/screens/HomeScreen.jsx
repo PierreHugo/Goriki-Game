@@ -4,7 +4,6 @@ import TimerSetup from "../components/TimerSetup";
 const LANGUAGES = [
   { code: "fr", label: "Français" },
   { code: "en", label: "English" },
-  { code: "ja", label: "日本語" },
 ];
 
 export default function HomeScreen({ options, setOptions, onStart, totalCount }) {
