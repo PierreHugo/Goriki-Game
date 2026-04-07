@@ -19,11 +19,9 @@ export default function App() {
 
   const timer = useTimer(options.timerSeconds, options.infinite, finishGame);
 
-  // Chargement initial des données
   if (loading) {
     return (
       <div className="loading-screen">
-        <img src="/goriki-logo.png" alt="Goriki Game" className="logo" />
         <p className="loading-label">Chargement des Pokémon...</p>
         <div className="progress-track">
           <div
@@ -39,11 +37,11 @@ export default function App() {
   if (error) {
     return (
       <div className="loading-screen">
-        <p className="error-label">
-          Impossible de charger les données Pokémon 😞
-        </p>
+        <p className="error-label">Impossible de charger les données Pokémon 😞</p>
         <p className="error-sub">{error}</p>
-        <button onClick={() => window.location.reload()}>Réessayer</button>
+        <button className="start-btn" onClick={() => window.location.reload()}>
+          Réessayer
+        </button>
       </div>
     );
   }
@@ -72,6 +70,7 @@ export default function App() {
       {phase === "playing" && (
         <GameScreen
           options={options}
+          setOptions={setOptions}
           sortedPokemon={sortedPokemon}
           guessed={guessed}
           pokemonById={pokemonById}

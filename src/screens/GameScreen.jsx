@@ -4,6 +4,7 @@ import PokemonGrid from "../components/PokemonGrid";
 
 export default function GameScreen({
   options,
+  setOptions,
   sortedPokemon,
   guessed,
   pokemonById,
@@ -15,14 +16,15 @@ export default function GameScreen({
   const { language, infinite, sortBy } = options;
   const isFr = language !== "en" && language !== "ja";
 
+  const handleSortChange = (val) =>
+    setOptions((prev) => ({ ...prev, sortBy: val }));
+
   return (
     <div className="game-screen">
 
-      {/* --- Barre supérieure --- */}
       <header className="game-header">
         <h1 className="game-title">Goriki Game</h1>
 
-        {/* Timer */}
         <div className={`game-timer ${timer.isUrgent ? "urgent" : ""}`}>
           {infinite
             ? (isFr ? "∞ Infini" : "∞ Infinite")
@@ -34,27 +36,19 @@ export default function GameScreen({
         </button>
       </header>
 
-      {/* --- Champ de saisie --- */}
       <div className="game-input-wrapper">
-        <InputGuess
-          onSubmit={onSubmitGuess}
-          language={language}
-        />
+        <InputGuess onSubmit={onSubmitGuess} language={language} />
       </div>
 
-      {/* --- Progression --- */}
       <ProgressBar stats={stats} language={language} />
 
-      {/* --- Tableau des Pokémon --- */}
       <PokemonGrid
         sortedPokemon={sortedPokemon}
         guessed={guessed}
         pokemonById={pokemonById}
         language={language}
         sortBy={sortBy}
-        onSortChange={(val) =>
-          options && (options.sortBy = val) // géré via setOptions dans App si besoin
-        }
+        onSortChange={handleSortChange}
         revealed={false}
       />
 
