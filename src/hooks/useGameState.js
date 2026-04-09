@@ -89,20 +89,8 @@ export function useGameState(allPokemon, onVictory) {
   }, []);
 
   const sortedPokemon = useMemo(() => {
-    const lang = options.language;
-    const nameKey = lang === "fr" ? "nameFr" : "nameEn";
-    return [...activePokemon].sort((a, b) => {
-      switch (options.sortBy) {
-        case "name":
-          return (a[nameKey] ?? "").localeCompare(b[nameKey] ?? "");
-        case "type":
-          return a.types[0].localeCompare(b.types[0]) || a.id - b.id;
-        case "id":
-        default:
-          return a.id - b.id;
-      }
-    });
-  }, [activePokemon, options.sortBy, options.language]);
+    return [...activePokemon].sort((a, b) => a.id - b.id);
+  }, [activePokemon]);
 
   return {
     options, setOptions,

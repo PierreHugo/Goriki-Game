@@ -22,26 +22,24 @@ export default function GameScreen({
   return (
     <div className="game-screen">
 
+      {/* Header sticky — titre + timer + abandon */}
       <header className="game-header">
         <h1 className="game-title">Goriki Game</h1>
-
         <div className={`game-timer ${timer.isUrgent ? "urgent" : ""}`}>
-          {infinite
-            ? (isFr ? "∞ Infini" : "∞ Infinite")
-            : timer.formatted}
+          {infinite ? (isFr ? "∞ Infini" : "∞ Infinite") : timer.formatted}
         </div>
-
         <button className="give-up-btn" onClick={onGiveUp}>
           {isFr ? "Abandonner" : "Give up"}
         </button>
       </header>
 
-      <div className="game-input-wrapper">
+      {/* Input sticky — reste visible au scroll */}
+      <div className="game-input-sticky">
         <InputGuess onSubmit={onSubmitGuess} language={language} />
+        <ProgressBar stats={stats} language={language} />
       </div>
 
-      <ProgressBar stats={stats} language={language} />
-
+      {/* Grille scrollable */}
       <PokemonGrid
         sortedPokemon={sortedPokemon}
         guessed={guessed}

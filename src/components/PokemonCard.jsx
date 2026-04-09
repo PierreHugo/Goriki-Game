@@ -32,8 +32,17 @@ export default function PokemonCard({
       onClick={onClick}
       title={pokemon[nameKey]}
     >
-      <span className="card-id">#{String(pokemon.id).padStart(4, "0")}</span>
-      <span className="card-name">{pokemon[nameKey]}</span>
+      <div className="card-left">
+        <span className="card-id">#{String(pokemon.id).padStart(4, "0")}</span>
+        <span className="card-name">{pokemon[nameKey]}</span>
+      </div>
+      {isGuessed && pokemon.sprite && (
+        <img
+          src={pokemon.sprite}
+          alt={pokemon[nameKey]}
+          className="card-sprite"
+        />
+      )}
     </div>
   );
 }
