@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import InputGuess from "../components/InputGuess";
 import ProgressBar from "../components/ProgressBar";
 import PokemonGrid from "../components/PokemonGrid";
@@ -13,16 +14,13 @@ export default function GameScreen({
   onSubmitGuess,
   onGiveUp,
 }) {
-  const { language, infinite, sortBy } = options;
+  const { language, infinite } = options;
   const isFr = language !== "en" && language !== "ja";
-
-  const handleSortChange = (val) =>
-    setOptions((prev) => ({ ...prev, sortBy: val }));
+  const inputRef = useRef(null);
 
   return (
     <div className="game-screen">
 
-      {/* Header sticky — titre + timer + abandon */}
       <header className="game-header">
         <h1 className="game-title">Goriki Game</h1>
         <div className={`game-timer ${timer.isUrgent ? "urgent" : ""}`}>
@@ -33,21 +31,22 @@ export default function GameScreen({
         </button>
       </header>
 
-      {/* Input sticky — reste visible au scroll */}
       <div className="game-input-sticky">
-        <InputGuess onSubmit={onSubmitGuess} language={language} />
+        <InputGuess
+          ref={inputRef}
+          onSubmit={onSubmitGuess}
+          language={language}
+        />
         <ProgressBar stats={stats} language={language} />
       </div>
 
-      {/* Grille scrollable */}
       <PokemonGrid
         sortedPokemon={sortedPokemon}
         guessed={guessed}
         pokemonById={pokemonById}
         language={language}
-        sortBy={sortBy}
-        onSortChange={handleSortChange}
         revealed={false}
+        onSheetClose={() => inputRef.current?.focus()}
       />
 
     </div>

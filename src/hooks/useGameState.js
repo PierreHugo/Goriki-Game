@@ -68,11 +68,31 @@ export function useGameState(allPokemon, onVictory) {
   const submitGuess = useCallback(
     (rawInput) => {
       const normalized = normalizeName(rawInput);
+
+      // Cas spécial Nidoran — "nidoran" remplit les deux formes
+      if (normalized === "nidoran") {
+        const nidoranIds = [29, 32].filter(
+          (id) => activePokemon.some((p) => p.id === id) && !guessed.has(id)
+        );
+        // Aucun Nidoran dans la sélection active → on ignore complètement
+        const nidoranInActive = [29, 32].some((id) =>
+          activePokemon.some((p) => p.id === id)
+        );
+        if (!nidoranInActive) return false;
+        if (nidoranIds.length === 0) return "already";
+        setGuessed((prev) => {
+          const next = new Set(prev);
+          nidoranIds.forEach((id) => next.add(id));
+          return next;
+        });
+        return "success";
+      }
+
       const id = nameToId.get(normalized);
       if (!id) return false;
-      if (guessed.has(id)) return false;
+      if (guessed.has(id)) return "already";
       setGuessed((prev) => new Set(prev).add(id));
-      return true;
+      return "success";
     },
     [nameToId, guessed]
   );

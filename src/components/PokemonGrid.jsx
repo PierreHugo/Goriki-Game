@@ -2,34 +2,16 @@ import { useState, useMemo } from "react";
 import PokemonCard from "./PokemonCard";
 import PokemonSheet from "./PokemonSheet";
 
-const SORT_OPTIONS = [
-  { value: "id",   labelFr: "Numéro",  labelEn: "Number" },
-  { value: "name", labelFr: "Nom",     labelEn: "Name" },
-  { value: "type", labelFr: "Type",    labelEn: "Type" },
-];
-
-const GEN_LABELS = {
-  1: "Génération 1 — Kanto",
-  2: "Génération 2 — Johto",
-  3: "Génération 3 — Hoenn",
-  4: "Génération 4 — Sinnoh",
-  5: "Génération 5 — Unys",
-  6: "Génération 6 — Kalos",
-  7: "Génération 7 — Alola",
-  8: "Génération 8 — Galar",
-  9: "Génération 9 — Paldea",
+const GEN_LABELS_FR = {
+  1: "Génération 1", 2: "Génération 2", 3: "Génération 3",
+  4: "Génération 4", 5: "Génération 5", 6: "Génération 6",
+  7: "Génération 7", 8: "Génération 8", 9: "Génération 9",
 };
 
 const GEN_LABELS_EN = {
-  1: "Generation 1 — Kanto",
-  2: "Generation 2 — Johto",
-  3: "Generation 3 — Hoenn",
-  4: "Generation 4 — Sinnoh",
-  5: "Generation 5 — Unova",
-  6: "Generation 6 — Kalos",
-  7: "Generation 7 — Alola",
-  8: "Generation 8 — Galar",
-  9: "Generation 9 — Paldea",
+  1: "Generation 1", 2: "Generation 2", 3: "Generation 3",
+  4: "Generation 4", 5: "Generation 5", 6: "Generation 6",
+  7: "Generation 7", 8: "Generation 8", 9: "Generation 9",
 };
 
 const TYPE_LABELS_FR = {
@@ -48,30 +30,17 @@ const TYPE_LABELS_EN = {
   steel: "Steel", fairy: "Fairy",
 };
 
-/**
- * Regroupe la liste triée en sections avec un label
- */
-function buildGroups(sortedPokemon, sortBy, language) {
+function buildGroups(sortedPokemon, language) {
   const isFr = language !== "en";
   const groups = [];
   let currentKey = null;
   let currentGroup = null;
 
   for (const p of sortedPokemon) {
-    let key, label;
-
-    if (sortBy === "type") {
-      key = p.types[0];
-      label = isFr
-        ? (TYPE_LABELS_FR[key] ?? key)
-        : (TYPE_LABELS_EN[key] ?? key);
-    } else {
-      // "id" ou "name" → on groupe par génération
-      key = p.generation;
-      label = isFr
-        ? (GEN_LABELS[key] ?? `Génération ${key}`)
-        : (GEN_LABELS_EN[key] ?? `Generation ${key}`);
-    }
+    const key = p.generation;
+    const label = isFr
+      ? (GEN_LABELS_FR[key] ?? `Génération ${key}`)
+      : (GEN_LABELS_EN[key] ?? `Generation ${key}`);
 
     if (key !== currentKey) {
       currentGroup = { key, label, items: [] };
@@ -89,16 +58,15 @@ export default function PokemonGrid({
   guessed,
   pokemonById,
   language,
-  sortBy,
-  onSortChange,
   revealed,
+  onSheetClose,
 }) {
   const [selected, setSelected] = useState(null);
   const isFr = language !== "en" && language !== "ja";
 
   const groups = useMemo(
-    () => buildGroups(sortedPokemon, sortBy, language),
-    [sortedPokemon, sortBy, language]
+    () => buildGroups(sortedPokemon, language),
+    [sortedPokemon, language]
   );
 
   const handleCardClick = (id) => {
@@ -106,16 +74,18 @@ export default function PokemonGrid({
     setSelected(id === selected ? null : id);
   };
 
+  const closeSheet = () => {
+    setSelected(null);
+    onSheetClose?.();
+  };
+
   return (
     <div className="pokemon-grid-wrapper">
 
-      {/* Groupes avec démarcations */}
       {groups.map((group) => (
         <div key={group.key} className="pokemon-group">
           <div className="pokemon-group-header">
-            <span className="pokemon-group-gen">
-              {isFr ? `Génération ${group.key}` : `Generation ${group.key}`}
-            </span>
+            <span className="pokemon-group-gen">{group.label}</span>
             <div className="pokemon-group-bar-track">
               <div
                 className="pokemon-group-bar-fill"
@@ -132,6 +102,7 @@ export default function PokemonGrid({
               /{group.items.length}
             </span>
           </div>
+
           <div className="pokemon-grid">
             {group.items.map((p) => (
               <PokemonCard
@@ -147,11 +118,10 @@ export default function PokemonGrid({
         </div>
       ))}
 
-      {/* Mini fiche */}
       {selected && pokemonById.get(selected) && (
         <PokemonSheet
           pokemon={pokemonById.get(selected)}
-          onClose={() => setSelected(null)}
+          onClose={closeSheet}
         />
       )}
     </div>

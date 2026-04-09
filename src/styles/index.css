@@ -940,3 +940,13 @@ img { display: block; max-width: 100%; }
   letter-spacing: 0.06em;
   white-space: nowrap;
 }
+
+.input-badge.already {
+  color: #f0a500;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.input-guess-wrapper.already .input-guess {
+  border-color: #f0a500;
+}
