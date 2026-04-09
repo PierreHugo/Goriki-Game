@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { usePokeAPI } from "./hooks/usePokeAPI";
 import { useGameState } from "./hooks/useGameState";
 import { useTimer } from "./hooks/useTimer";
@@ -7,6 +8,7 @@ import ResultScreen from "./screens/ResultScreen";
 
 export default function App() {
   const { pokemon, loading, progress, error } = usePokeAPI();
+  const [isVictory, setIsVictory] = useState(false);
 
   const {
     options, setOptions,
@@ -15,7 +17,7 @@ export default function App() {
     activePokemon, sortedPokemon, pokemonById,
     stats,
     startGame, submitGuess, finishGame, resetGame,
-  } = useGameState(pokemon);
+  } = useGameState(pokemon, () => setIsVictory(true));
 
   const timer = useTimer(options.timerSeconds, options.infinite, finishGame);
 
@@ -47,11 +49,13 @@ export default function App() {
   }
 
   const handleStart = () => {
+    setIsVictory(false);
     startGame();
     timer.start();
   };
 
   const handleReset = () => {
+    setIsVictory(false);
     timer.reset();
     resetGame();
   };
@@ -88,6 +92,7 @@ export default function App() {
           guessed={guessed}
           pokemonById={pokemonById}
           stats={stats}
+          isVictory={isVictory}
           onRestart={handleReset}
         />
       )}

@@ -546,13 +546,29 @@ img { display: block; max-width: 100%; }
   border: 1px solid var(--border);
   background: var(--bg-card);
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 6px 10px;
-  gap: 2px;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 6px 6px 10px;
   border-top-width: 3px;
   transition: background 0.15s, transform 0.1s;
   overflow: hidden;
+}
+
+.card-left {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow: hidden;
+  flex: 1;
+}
+
+.card-sprite {
+  width: 40px;
+  height: 40px;
+  image-rendering: pixelated;
+  flex-shrink: 0;
+  opacity: 0.9;
 }
 
 .pokemon-card.empty {
@@ -790,4 +806,147 @@ img { display: block; max-width: 100%; }
   .start-btn {
     width: 100%;
   }
+}
+
+/* ============================================================
+   PATCHES fix/ui-bugs
+   ============================================================ */
+
+/* Meilleur contraste deviné vs révélé */
+.pokemon-card.guessed {
+  background: var(--bg-card);
+  border-color: var(--border);
+  border-top-width: 3px;
+}
+
+.pokemon-card.guessed .card-name {
+  color: var(--text-primary);
+}
+
+.pokemon-card.guessed .card-id {
+  color: var(--text-muted);
+}
+
+.pokemon-card.revealed {
+  background: #1a1a1a;
+  border-color: #222;
+  opacity: 0.35;
+}
+
+.pokemon-card.revealed .card-name {
+  color: #444;
+}
+
+/* Header victoire */
+.result-header--victory {
+  padding: 32px 24px;
+  background: linear-gradient(135deg, #1a2e1a, #0f1f0f);
+  border: 1px solid #2a4a2a;
+  border-radius: var(--radius-lg);
+}
+
+.result-header--victory .result-title {
+  color: #7dde7d;
+  font-size: 2.4rem;
+}
+
+.result-header--victory .result-message {
+  color: #a0d4a0;
+  font-size: 1.1rem;
+}
+
+/* --- Sprite dans la card --- */
+.pokemon-card {
+  height: 56px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 6px 6px 10px;
+}
+
+.card-left {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow: hidden;
+  flex: 1;
+}
+
+.card-sprite {
+  width: 40px;
+  height: 40px;
+  image-rendering: pixelated;
+  flex-shrink: 0;
+  opacity: 0.9;
+}
+
+/* --- Input sticky --- */
+.game-input-sticky {
+  position: sticky;
+  top: 57px;
+  z-index: 40;
+  background: rgba(15, 15, 15, 0.96);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* --- Groupes avec démarcations --- */
+.pokemon-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pokemon-group-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 16px;
+  margin-bottom: 4px;
+}
+
+.pokemon-group-bar-track {
+  flex: 1;
+  height: 3px;
+  background: var(--border);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.pokemon-group-bar-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 99px;
+  transition: width 0.4s ease;
+}
+
+.pokemon-group-count {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.pokemon-group-gen {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+.input-badge.already {
+  color: #f0a500;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.input-guess-wrapper.already .input-guess {
+  border-color: #f0a500;
 }

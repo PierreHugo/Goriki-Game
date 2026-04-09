@@ -1,17 +1,24 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, forwardRef, useImperativeHandle } from "react";
 
 const PLACEHOLDERS = {
   fr: "Tape un nom de Pokémon...",
   en: "Type a Pokémon name...",
-  ja: "ポケモンの名前を入力...",
 };
 
-export default function InputGuess({ onSubmit, language }) {
+const ALREADY_LABELS = {
+  fr: "Déjà trouvé !",
+  en: "Already found!",
+};
+
+const InputGuess = forwardRef(({ onSubmit, language }, ref) => {
   const [value, setValue] = useState("");
-  const [flash, setFlash] = useState(null); // "success" | "error" | null
+  const [flash, setFlash] = useState(null); // "success" | "already" | null
   const inputRef = useRef(null);
 
-  // Focus auto au montage
+  useImperativeHandle(ref, () => ({
+    focus: () => inputRef.current?.focus(),
+  }));
+
   useEffect(() => {
     inputRef.current?.focus();
   }, []);
@@ -19,20 +26,20 @@ export default function InputGuess({ onSubmit, language }) {
   const handleChange = (e) => {
     const raw = e.target.value;
     setValue(raw);
-
-    // Tentative de devin à chaque frappe (pas besoin d'appuyer Entrée)
     if (raw.trim().length < 2) return;
 
-    const success = onSubmit(raw.trim());
-    if (success) {
+    const result = onSubmit(raw.trim());
+    if (result === "success") {
       setValue("");
       triggerFlash("success");
+    } else if (result === "already") {
+      triggerFlash("already");
     }
   };
 
   const triggerFlash = (type) => {
     setFlash(type);
-    setTimeout(() => setFlash(null), 600);
+    setTimeout(() => setFlash(null), 800);
   };
 
   return (
@@ -52,6 +59,15 @@ export default function InputGuess({ onSubmit, language }) {
       {flash === "success" && (
         <span className="input-badge success">✓</span>
       )}
+      {flash === "already" && (
+        <span className="input-badge already">
+          {ALREADY_LABELS[language] ?? ALREADY_LABELS.fr}
+        </span>
+      )}
     </div>
   );
-}
+});
+
+InputGuess.displayName = "InputGuess";
+
+export default InputGuess;
