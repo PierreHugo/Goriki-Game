@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo, useEffect } from "react";
-import { normalizeName, filterPokemon } from "./usePokeAPI";
+import { normalizeName, filterPokemon, compareByDex, unitKey } from "./usePokeAPI";
 
 export const DEFAULT_OPTIONS = {
   generations: [],
@@ -20,7 +20,7 @@ export function useGameState(allPokemon, onVictory) {
     if (!allPokemon.length) return [];
     const { generations, types, categories } = options;
     const hasFilter = generations.length || types.length || categories.length;
-    if (!hasFilter) return allPokemon.filter((p) => !p.isRegional);
+    if (!hasFilter) return allPokemon.filter((p) => !p.isRegional && !p.isSpecialForm);
     return filterPokemon(allPokemon, { generations, types, categories });
   }, [allPokemon, options]);
 
@@ -40,7 +40,7 @@ export function useGameState(allPokemon, onVictory) {
       addToMap(p.nameFrNormalized, p.id);
       addToMap(p.nameEnNormalized, p.id);
       if (p.nameJaNormalized) addToMap(p.nameJaNormalized, p.id);
-      if (p.isRegional) {
+      if (p.baseId != null) {
         addToMap(p.baseNameFrNormalized, p.id);
         addToMap(p.baseNameEnNormalized, p.id);
         addToMap(p.baseNameJaNormalized, p.id);
@@ -50,11 +50,13 @@ export function useGameState(allPokemon, onVictory) {
   }, [activePokemon]);
 
   const stats = useMemo(() => {
-    const total = activePokemon.length;
-    const found = guessed.size;
+    const total = new Set(activePokemon.map(unitKey)).size;
+    const found = new Set(
+      activePokemon.filter((p) => guessed.has(p.id)).map(unitKey)
+    ).size;
     const percent = total > 0 ? Math.round((found / total) * 100) : 0;
     return { total, found, percent };
-  }, [activePokemon.length, guessed]);
+  }, [activePokemon, guessed]);
 
   // Victoire automatique
   useEffect(() => {

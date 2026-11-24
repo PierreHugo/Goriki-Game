@@ -67,7 +67,7 @@ export default function App() {
           options={options}
           setOptions={setOptions}
           onStart={handleStart}
-          totalCount={activePokemon.length}
+          totalCount={stats.total}
         />
       )}
 
