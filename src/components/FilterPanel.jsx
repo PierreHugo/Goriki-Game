@@ -31,7 +31,9 @@ const CATEGORIES = [
   { key: "fossils",           labelFr: "Fossiles",            labelEn: "Fossils" },
   { key: "ultraBeasts",       labelFr: "Ultra-Chimères",      labelEn: "Ultra Beasts" },
   { key: "paradoxPokemon",    labelFr: "Paradoxes",           labelEn: "Paradoxes" },
-  { key: "regionalForms",     labelFr: "Formes régionales", labelEn: "Regional Forms" },
+  { key: "regionalForms",     labelFr: "Formes régionales",   labelEn: "Regional Forms" },
+  { key: "megaForms",         labelFr: "Méga-évolutions",     labelEn: "Mega Evolutions" },
+  { key: "gigamaxForms",      labelFr: "Gigamax",             labelEn: "Gigantamax" },
 ];
 
 function toggle(arr, value) {
