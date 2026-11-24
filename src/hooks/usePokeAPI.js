@@ -1,9 +1,15 @@
 import { useState, useEffect } from "react";
 
+// Les variantes d'une même Méga/Gigamax comptent pour un seul Pokémon
+export const unitKey = (p) => p.countKey ?? p.id;
+
 const CACHE_KEY = "goriki_pokedata";
-const CACHE_VERSION = "1.2.0";
+const CACHE_VERSION = "1.3.1";
 const BATCH_SIZE = 50;
 const TOTAL_POKEMON = 1025;
+
+// Slugs PokéAPI des formes Méga (-mega, -mega-x, -mega-y, -mega-z) et Gigamax (-gmax)
+const SPECIAL_SLUG = /-(mega(-[xyz])?|gmax)$/;
 
 const CATEGORY_IDS = {
   starters: [
@@ -138,8 +144,22 @@ export function normalizeName(name) {
   return name
     .toLowerCase()
     .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[̀-ͯ]/g, "")
     .replace(/[-\s''.]/g, "");
+}
+
+/**
+ * Tri par numéro de dex national : chaque forme (régionale, Méga, Gigamax)
+ * se place juste après son Pokémon de base.
+ * baseId vaut null pour les Pokémon normaux, donc `??` retombe sur leur id.
+ * À réutiliser dans useGameState.js pour sortedPokemon.
+ */
+export function compareByDex(a, b) {
+  const aKey = a.baseId ?? a.id;
+  const bKey = b.baseId ?? b.id;
+  if (aKey !== bKey) return aKey - bKey;
+  // la base avant ses formes
+  return (a.baseId != null) - (b.baseId != null);
 }
 
 async function fetchBatch(ids) {
@@ -155,40 +175,53 @@ async function fetchBatch(ids) {
     ]);
     const getName = (lang) =>
       species.names.find((n) => n.language.name === lang)?.name ?? null;
+
+    // Formes Méga / Gigamax découvertes via la liste des variétés de l'espèce
+    const specials = species.varieties
+      .map((v) => v.pokemon.name)
+      .filter((slug) => SPECIAL_SLUG.test(slug))
+      .map((slug) => ({ slug, baseId: id }));
+
     return {
-      id,
-      nameFr: getName("fr"),
-      nameEn: getName("en"),
-      nameJa: getName("ja"),
-      nameEnNormalized: normalizeName(getName("en") ?? ""),
-      nameFrNormalized: normalizeName(getName("fr") ?? ""),
-      nameJaNormalized: normalizeName(getName("ja") ?? ""),
-      types: pokemon.types.map((t) => t.type.name),
-      sprite: pokemon.sprites.front_default,
-      generation: parseInt(
-        species.generation.url.split("/").filter(Boolean).pop()
-      ),
-      categories: Object.entries(CATEGORY_IDS)
-        .filter(([, ids]) => ids.includes(id))
-        .map(([cat]) => cat),
-      isRegional: false,
-      baseId: null,
-      region: null,
+      pokemon: {
+        id,
+        nameFr: getName("fr"),
+        nameEn: getName("en"),
+        nameJa: getName("ja"),
+        nameEnNormalized: normalizeName(getName("en") ?? ""),
+        nameFrNormalized: normalizeName(getName("fr") ?? ""),
+        nameJaNormalized: normalizeName(getName("ja") ?? ""),
+        types: pokemon.types.map((t) => t.type.name),
+        sprite: pokemon.sprites.front_default,
+        generation: parseInt(
+          species.generation.url.split("/").filter(Boolean).pop()
+        ),
+        categories: Object.entries(CATEGORY_IDS)
+          .filter(([, ids]) => ids.includes(id))
+          .map(([cat]) => cat),
+        isRegional: false,
+        baseId: null,
+        region: null,
+      },
+      specials,
     };
   });
-  const results = await Promise.all(promises);
-  return results.filter(Boolean);
+  const results = (await Promise.all(promises)).filter(Boolean);
+  return {
+    pokemon: results.map((r) => r.pokemon),
+    specials: results.flatMap((r) => r.specials),
+  };
 }
 
 async function fetchRegionalForms() {
   const promises = REGIONAL_FORMS.map(async (form) => {
     try {
       const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${form.slug}`);
-      
+
       if (!res.ok) {
         console.warn("Forme régionale introuvable :", form.slug);
         return null;
-      }      
+      }
       const pokemon = await res.json();
 
       // Récupère les noms de base depuis species du baseId
@@ -246,6 +279,69 @@ async function fetchRegionalForms() {
   return results.filter(Boolean);
 }
 
+/**
+ * Récupère les formes Méga et Gigamax découvertes dans les variétés des espèces.
+ * Les noms de base viennent des Pokémon déjà chargés (baseById) :
+ * aucune requête "species" supplémentaire.
+ */
+async function fetchSpecialForms(specials, baseById) {
+  const results = await Promise.all(
+    specials.map(async ({ slug, baseId }) => {
+      try {
+        const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${slug}`);
+        if (!res.ok) {
+          console.warn("Forme Méga/Gigamax introuvable :", slug);
+          return null;
+        }
+        const data = await res.json();
+        const base = baseById.get(baseId);
+        if (!base) return null;
+
+        const isGmax = slug.endsWith("-gmax");
+        const letter = slug.match(/-mega-([xyz])$/)?.[1]?.toUpperCase();
+        const suffix = letter ? ` ${letter}` : "";
+
+        const nameFr = isGmax
+          ? `${base.nameFr} Gigamax`
+          : `Méga-${base.nameFr}${suffix}`;
+        const nameEn = isGmax
+          ? `Gigantamax ${base.nameEn}`
+          : `Mega ${base.nameEn}${suffix}`;
+
+        return {
+          id: `${baseId}-${slug}`,
+          baseId,
+          nameFr,
+          nameEn,
+          nameJa: base.nameJa,
+          nameFrNormalized: normalizeName(nameFr),
+          nameEnNormalized: normalizeName(nameEn),
+          nameJaNormalized: base.nameJaNormalized,
+          baseNameFrNormalized: base.nameFrNormalized,
+          baseNameEnNormalized: base.nameEnNormalized,
+          baseNameJaNormalized: base.nameJaNormalized,
+          types: data.types.map((t) => t.type.name),
+          sprite:
+            data.sprites.front_default ??
+            data.sprites.other?.home?.front_default ??
+            data.sprites.other?.["official-artwork"]?.front_default ??
+            null,
+          generation: base.generation,
+          categories: [isGmax ? "gigamaxForms" : "megaForms"],
+          isRegional: false,
+          isSpecialForm: true,
+          formKind: isGmax ? "gmax" : "mega",
+          countKey: `${baseId}-${isGmax ? "gmax" : "mega"}${letter ? `-${letter.toLowerCase()}` : ""}`,
+          region: null,
+        };
+      } catch {
+        return null;
+      }
+    })
+  );
+  return results.filter(Boolean);
+}
+
 export function usePokeAPI() {
   const [pokemon, setPokemon] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -274,28 +370,27 @@ export function usePokeAPI() {
         }
 
         const allPokemon = [];
+        const allSpecials = [];
         for (let i = 0; i < batches.length; i++) {
           const batch = await fetchBatch(batches[i]);
-          allPokemon.push(...batch);
+          allPokemon.push(...batch.pokemon);
+          allSpecials.push(...batch.specials);
           // 90% de la progression pour les Pokémon de base
           setProgress(((i + 1) / batches.length) * 0.9);
         }
 
-        // Fetch formes régionales
+        // Fetch formes régionales + Méga + Gigamax
         setProgress(0.9);
-        const regionalForms = await fetchRegionalForms();
-        allPokemon.push(...regionalForms);
+        const baseById = new Map(allPokemon.map((p) => [p.id, p]));
+        const [regionalForms, specialForms] = await Promise.all([
+          fetchRegionalForms(),
+          fetchSpecialForms(allSpecials, baseById),
+        ]);
+        allPokemon.push(...regionalForms, ...specialForms);
         setProgress(1);
 
-        // Tri : d'abord par baseId, puis les formes régionales après leur base
-        allPokemon.sort((a, b) => {
-          const aBase = a.isRegional ? a.baseId : a.id;
-          const bBase = b.isRegional ? b.baseId : b.id;
-          if (aBase !== bBase) return aBase - bBase;
-          if (!a.isRegional && b.isRegional) return -1;
-          if (a.isRegional && !b.isRegional) return 1;
-          return 0;
-        });
+        // Tri : par numéro de dex, chaque forme juste après sa base
+        allPokemon.sort(compareByDex);
 
         localStorage.setItem(
           CACHE_KEY,
@@ -318,6 +413,12 @@ export function usePokeAPI() {
 export function filterPokemon(pokemon, options) {
   const { generations, types, categories } = options;
   return pokemon.filter((p) => {
+    // Méga et Gigamax : uniquement si leur catégorie est cochée,
+    // et jamais avec un filtre par génération
+    if (p.isSpecialForm) {
+      if (generations?.length) return false;
+      if (!categories?.some((c) => p.categories.includes(c))) return false;
+    }
     // Les formes régionales sont exclues du filtre par génération
     if (generations?.length) {
       if (p.isRegional) return false;

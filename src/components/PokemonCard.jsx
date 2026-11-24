@@ -33,7 +33,7 @@ export default function PokemonCard({
       title={pokemon[nameKey]}
     >
       <div className="card-left">
-        <span className="card-id">#{String(pokemon.isRegional ? pokemon.baseId : pokemon.id).padStart(4, "0")}</span>
+        <span className="card-id">#{String(pokemon.baseId ?? pokemon.id).padStart(4, "0")}</span>
         <span className="card-name">{pokemon[nameKey]}</span>
       </div>
       {isGuessed && pokemon.sprite && (
