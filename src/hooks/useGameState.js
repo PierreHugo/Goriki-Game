@@ -8,7 +8,6 @@ export const DEFAULT_OPTIONS = {
   timerSeconds: 20 * 60,
   infinite: false,
   language: "fr",
-  sortBy: "id",
 };
 
 export function useGameState(allPokemon, onVictory) {
@@ -29,12 +28,18 @@ export function useGameState(allPokemon, onVictory) {
     return new Map(activePokemon.map((p) => [p.id, p]));
   }, [activePokemon]);
 
-  const nameToId = useMemo(() => {
+  // Map nom normalisé → liste d'IDs (un nom peut matcher plusieurs formes)
+  const nameToIds = useMemo(() => {
     const map = new Map();
+    const addToMap = (key, id) => {
+      if (!key) return;
+      if (!map.has(key)) map.set(key, []);
+      map.get(key).push(id);
+    };
     activePokemon.forEach((p) => {
-      map.set(p.nameFrNormalized, p.id);
-      map.set(p.nameEnNormalized, p.id);
-      if (p.nameJaNormalized) map.set(p.nameJaNormalized, p.id);
+      addToMap(p.nameFrNormalized, p.id);
+      addToMap(p.nameEnNormalized, p.id);
+      if (p.nameJaNormalized) addToMap(p.nameJaNormalized, p.id);
     });
     return map;
   }, [activePokemon]);
@@ -46,7 +51,7 @@ export function useGameState(allPokemon, onVictory) {
     return { total, found, percent };
   }, [activePokemon.length, guessed]);
 
-  // Victoire automatique dès que tout est trouvé
+  // Victoire automatique
   useEffect(() => {
     if (
       phase === "playing" &&
@@ -69,12 +74,11 @@ export function useGameState(allPokemon, onVictory) {
     (rawInput) => {
       const normalized = normalizeName(rawInput);
 
-      // Cas spécial Nidoran — "nidoran" remplit les deux formes
+      // Cas spécial Nidoran
       if (normalized === "nidoran") {
         const nidoranIds = [29, 32].filter(
           (id) => activePokemon.some((p) => p.id === id) && !guessed.has(id)
         );
-        // Aucun Nidoran dans la sélection active → on ignore complètement
         const nidoranInActive = [29, 32].some((id) =>
           activePokemon.some((p) => p.id === id)
         );
@@ -88,13 +92,23 @@ export function useGameState(allPokemon, onVictory) {
         return "success";
       }
 
-      const id = nameToId.get(normalized);
-      if (!id) return false;
-      if (guessed.has(id)) return "already";
-      setGuessed((prev) => new Set(prev).add(id));
+      const ids = nameToIds.get(normalized);
+      if (!ids || ids.length === 0) return false;
+
+      // Filtre les IDs pas encore devinés
+      const newIds = ids.filter((id) => !guessed.has(id));
+      const allAlreadyGuessed = newIds.length === 0;
+
+      if (allAlreadyGuessed) return "already";
+
+      setGuessed((prev) => {
+        const next = new Set(prev);
+        newIds.forEach((id) => next.add(id));
+        return next;
+      });
       return "success";
     },
-    [nameToId, guessed]
+    [nameToIds, guessed, activePokemon]
   );
 
   const finishGame = useCallback(() => {
@@ -109,7 +123,14 @@ export function useGameState(allPokemon, onVictory) {
   }, []);
 
   const sortedPokemon = useMemo(() => {
-    return [...activePokemon].sort((a, b) => a.id - b.id);
+    return [...activePokemon].sort((a, b) => {
+      const aBase = a.isRegional ? a.baseId : a.id;
+      const bBase = b.isRegional ? b.baseId : b.id;
+      if (aBase !== bBase) return aBase - bBase;
+      if (!a.isRegional && b.isRegional) return -1;
+      if (a.isRegional && !b.isRegional) return 1;
+      return 0;
+    });
   }, [activePokemon]);
 
   return {
