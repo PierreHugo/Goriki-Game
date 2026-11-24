@@ -30,27 +30,48 @@ const TYPE_LABELS_EN = {
   steel: "Steel", fairy: "Fairy",
 };
 
+const REGION_ORDER = ["alola", "galar", "hisui", "paldea"];
+
+const REGION_GROUP_LABELS_FR = {
+  alola: "Formes d'Alola",
+  galar: "Formes de Galar",
+  hisui: "Formes de Hisui",
+  paldea: "Formes de Paldea",
+};
+
+const REGION_GROUP_LABELS_EN = {
+  alola: "Alolan forms",
+  galar: "Galarian forms",
+  hisui: "Hisuian forms",
+  paldea: "Paldean forms",
+};
+
 function buildGroups(sortedPokemon, language) {
   const isFr = language !== "en";
-  const groups = [];
-  let currentKey = null;
-  let currentGroup = null;
+  const byKey = new Map();
 
   for (const p of sortedPokemon) {
-    const key = p.generation;
-    const label = isFr
-      ? (GEN_LABELS_FR[key] ?? `Génération ${key}`)
-      : (GEN_LABELS_EN[key] ?? `Generation ${key}`);
+    const key = p.isRegional ? `region-${p.region}` : `gen-${p.generation}`;
 
-    if (key !== currentKey) {
-      currentGroup = { key, label, items: [] };
-      groups.push(currentGroup);
-      currentKey = key;
+    if (!byKey.has(key)) {
+      let label, order;
+      if (p.isRegional) {
+        label = isFr
+          ? REGION_GROUP_LABELS_FR[p.region]
+          : REGION_GROUP_LABELS_EN[p.region];
+        order = 100 + REGION_ORDER.indexOf(p.region); // après les gens
+      } else {
+        label = isFr
+          ? (GEN_LABELS_FR[p.generation] ?? `Génération ${p.generation}`)
+          : (GEN_LABELS_EN[p.generation] ?? `Generation ${p.generation}`);
+        order = p.generation;
+      }
+      byKey.set(key, { key, label, order, items: [] });
     }
-    currentGroup.items.push(p);
+    byKey.get(key).items.push(p);
   }
 
-  return groups;
+  return [...byKey.values()].sort((a, b) => a.order - b.order);
 }
 
 export default function PokemonGrid({
