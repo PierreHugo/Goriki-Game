@@ -94,13 +94,13 @@ export const REGIONAL_FORMS = [
   { slug: "articuno-galar",          baseId: 144, generation: 8, region: "galar" },
   { slug: "zapdos-galar",            baseId: 145, generation: 8, region: "galar" },
   { slug: "moltres-galar",           baseId: 146, generation: 8, region: "galar" },
+  { slug: "slowking-galar",          baseId: 199, generation: 8, region: "galar" },
   { slug: "zigzagoon-galar",         baseId: 263, generation: 8, region: "galar" },
   { slug: "linoone-galar",           baseId: 264, generation: 8, region: "galar" },
   { slug: "darumaka-galar",          baseId: 554, generation: 8, region: "galar" },
-  { slug: "darmanitan-galar",        baseId: 555, generation: 8, region: "galar" },
+  { slug: "darmanitan-galar-standard", baseId: 555, generation: 8, region: "galar" },
   { slug: "yamask-galar",            baseId: 562, generation: 8, region: "galar" },
   { slug: "stunfisk-galar",          baseId: 618, generation: 8, region: "galar" },
-  { slug: "espurr-galar",            baseId: 677, generation: 8, region: "galar" },
   { slug: "corsola-galar",           baseId: 222, generation: 8, region: "galar" },
   // --- Hisui (Gen 8) ---
   { slug: "growlithe-hisui",         baseId: 58,  generation: 8, region: "hisui" },
@@ -120,9 +120,9 @@ export const REGIONAL_FORMS = [
   { slug: "avalugg-hisui",           baseId: 713, generation: 8, region: "hisui" },
   { slug: "decidueye-hisui",         baseId: 724, generation: 8, region: "hisui" },
   // --- Paldea (Gen 9) ---
-  { slug: "tauros-paldea-combat",    baseId: 128, generation: 9, region: "paldea" },
-  { slug: "tauros-paldea-blaze",     baseId: 128, generation: 9, region: "paldea" },
-  { slug: "tauros-paldea-aqua",      baseId: 128, generation: 9, region: "paldea" },
+  { slug: "tauros-paldea-combat-breed",    baseId: 128, generation: 9, region: "paldea" },
+  { slug: "tauros-paldea-blaze-breed",     baseId: 128, generation: 9, region: "paldea" },
+  { slug: "tauros-paldea-aqua-breed",      baseId: 128, generation: 9, region: "paldea" },
   { slug: "wooper-paldea",           baseId: 194, generation: 9, region: "paldea" },
 ];
 
@@ -184,7 +184,11 @@ async function fetchRegionalForms() {
   const promises = REGIONAL_FORMS.map(async (form) => {
     try {
       const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${form.slug}`);
-      if (!res.ok) return null;
+      
+      if (!res.ok) {
+        console.warn("Forme régionale introuvable :", form.slug);
+        return null;
+      }      
       const pokemon = await res.json();
 
       // Récupère les noms de base depuis species du baseId
@@ -215,7 +219,7 @@ async function fetchRegionalForms() {
       const nameEn = `${regionEn} ${baseEn}`;
 
       return {
-        id: `${form.baseId}-${form.region}-${form.slug.split("-").pop()}`,
+        id: `${form.baseId}-${form.slug}`,
         baseId: form.baseId,
         nameFr,
         nameEn,
@@ -223,6 +227,9 @@ async function fetchRegionalForms() {
         nameFrNormalized: normalizeName(nameFr),
         nameEnNormalized: normalizeName(nameEn),
         nameJaNormalized: normalizeName(baseJa),
+        baseNameFrNormalized: normalizeName(baseFr),
+        baseNameEnNormalized: normalizeName(baseEn),
+        baseNameJaNormalized: normalizeName(baseJa),
         types: pokemon.types.map((t) => t.type.name),
         sprite: pokemon.sprites.front_default,
         generation: form.generation,

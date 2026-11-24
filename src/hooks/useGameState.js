@@ -20,7 +20,7 @@ export function useGameState(allPokemon, onVictory) {
     if (!allPokemon.length) return [];
     const { generations, types, categories } = options;
     const hasFilter = generations.length || types.length || categories.length;
-    if (!hasFilter) return allPokemon;
+    if (!hasFilter) return allPokemon.filter((p) => !p.isRegional);
     return filterPokemon(allPokemon, { generations, types, categories });
   }, [allPokemon, options]);
 
@@ -40,6 +40,11 @@ export function useGameState(allPokemon, onVictory) {
       addToMap(p.nameFrNormalized, p.id);
       addToMap(p.nameEnNormalized, p.id);
       if (p.nameJaNormalized) addToMap(p.nameJaNormalized, p.id);
+      if (p.isRegional) {
+        addToMap(p.baseNameFrNormalized, p.id);
+        addToMap(p.baseNameEnNormalized, p.id);
+        addToMap(p.baseNameJaNormalized, p.id);
+      }
     });
     return map;
   }, [activePokemon]);
