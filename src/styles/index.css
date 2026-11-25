@@ -947,6 +947,16 @@ img { display: block; max-width: 100%; }
   font-weight: 600;
 }
 
+.input-badge.close {
+  color: #F8D030;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
 .input-guess-wrapper.already .input-guess {
   border-color: #f0a500;
+}
+
+.input-guess-wrapper.close .input-guess {
+  border-color: #F8D030;
 }

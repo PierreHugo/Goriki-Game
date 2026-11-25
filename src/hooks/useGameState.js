@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo, useEffect } from "react";
-import { normalizeName, filterPokemon, compareByDex, unitKey } from "./usePokeAPI";
+import { normalizeName, filterPokemon, compareByDex, unitKey, isOneEditAway } from "./usePokeAPI";
 
 export const DEFAULT_OPTIONS = {
   generations: [],
@@ -118,6 +118,20 @@ export function useGameState(allPokemon, onVictory) {
     [nameToIds, guessed, activePokemon]
   );
 
+  const isCloseGuess = useCallback(
+    (rawInput) => {
+      const normalized = normalizeName(rawInput);
+      if (normalized.length < 4) return false;
+      for (const [name, ids] of nameToIds) {
+        if (name.length < 4) continue;
+        if (!ids.some((id) => !guessed.has(id))) continue; // déjà trouvé
+        if (isOneEditAway(normalized, name)) return true;
+      }
+      return false;
+    },
+    [nameToIds, guessed]
+  );
+
   const finishGame = useCallback(() => {
     setRevealed(true);
     setPhase("finished");
@@ -146,6 +160,6 @@ export function useGameState(allPokemon, onVictory) {
     guessed, revealed,
     activePokemon, sortedPokemon, pokemonById,
     stats,
-    startGame, submitGuess, finishGame, resetGame,
+    startGame, submitGuess, finishGame, resetGame, isCloseGuess,
   };
 }

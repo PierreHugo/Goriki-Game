@@ -148,6 +148,36 @@ export function normalizeName(name) {
     .replace(/[-\s''.]/g, "");
 }
 
+// Vrai si a et b sont à exactement 1 faute l'une de l'autre :
+// substitution, lettre en trop/en moins, ou deux lettres adjacentes inversées
+export function isOneEditAway(a, b) {
+  if (a === b) return false;
+  if (Math.abs(a.length - b.length) > 1) return false;
+
+  if (a.length === b.length) {
+    const diffs = [];
+    for (let i = 0; i < a.length; i++) {
+      if (a[i] !== b[i]) {
+        diffs.push(i);
+        if (diffs.length > 2) return false;
+      }
+    }
+    if (diffs.length === 1) return true; // substitution
+    return (
+      diffs.length === 2 &&
+      diffs[1] === diffs[0] + 1 &&
+      a[diffs[0]] === b[diffs[1]] &&
+      a[diffs[1]] === b[diffs[0]]
+    ); // inversion
+  }
+
+  // longueurs différentes de 1 : insertion / suppression
+  const [short, long] = a.length < b.length ? [a, b] : [b, a];
+  let i = 0;
+  while (i < short.length && short[i] === long[i]) i++;
+  return short.slice(i) === long.slice(i + 1);
+}
+
 /**
  * Tri par numéro de dex national : chaque forme (régionale, Méga, Gigamax)
  * se place juste après son Pokémon de base.
