@@ -12,6 +12,7 @@ export default function GameScreen({
   stats,
   timer,
   onSubmitGuess,
+  onCheckClose,
   onGiveUp,
 }) {
   const { language, infinite } = options;
@@ -35,6 +36,7 @@ export default function GameScreen({
         <InputGuess
           ref={inputRef}
           onSubmit={onSubmitGuess}
+          onCheckClose={onCheckClose}
           language={language}
         />
         <ProgressBar stats={stats} language={language} />

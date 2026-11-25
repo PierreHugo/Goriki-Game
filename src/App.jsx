@@ -16,7 +16,7 @@ export default function App() {
     guessed, revealed,
     activePokemon, sortedPokemon, pokemonById,
     stats,
-    startGame, submitGuess, finishGame, resetGame,
+    startGame, submitGuess, finishGame, resetGame, isCloseGuess
   } = useGameState(pokemon, () => setIsVictory(true));
 
   const timer = useTimer(options.timerSeconds, options.infinite, finishGame);
@@ -81,6 +81,7 @@ export default function App() {
           stats={stats}
           timer={timer}
           onSubmitGuess={submitGuess}
+          onCheckClose={isCloseGuess}
           onGiveUp={finishGame}
         />
       )}
